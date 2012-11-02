@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{01192482-9809-4c99-9c93-945b9334f017}</ProjectGuid>
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+    <ClojureRuntimesDirectory>$(VSCLOJURE_RUNTIMES_DIR)</ClojureRuntimesDirectory>
+    <ClojureVersion>1.3.0</ClojureVersion>
+    <StartupFile>C:\Users\Thomas\AppData\Local\Microsoft\VisualStudio\10.0\Extensions\vsClojure\vsClojure\2.0.0\Runtimes\1.3.0\\GameOfLife.exe</StartupFile>
+    <StartupArguments>
+    </StartupArguments>
+    <ClojureLoadPath>C:\Users\Thomas\Documents\Visual Studio 2010\Projects\GameOfLifeWindowsForms\GameOfLifeWindowsForms</ClojureLoadPath>
+    <Name>GameOfLifeWindowsForms</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Clojure.dll">
+      <HintPath>$(ClojureRuntimesDirectory)\$(ClojureVersion)\Clojure.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Board.clj">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BoardTest.clj">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GameOfLife.clj">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
+  <Target Name="CreateManifestResourceNames">
+  </Target>
+  <Target Name="CoreCompile">
+    <PropertyGroup>
+      <ClojureNamespaces>@(Compile -> '%(RelativeDir)%(Filename)', ' ')</ClojureNamespaces>
+    </PropertyGroup>
+    <Copy SourceFiles="@(Compile)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" DestinationFiles="@(Compile -> '$(OutDir)%(RelativeDir)%(Filename)%(Extension)')" />
+    <Exec WorkingDirectory="$(OutDir)" Command="&quot;$(ClojureRuntimesDirectory)\$(ClojureVersion)\Clojure.Compile&quot; $(ClojureNamespaces.Replace('\', '.'))" />
+    <RemoveDuplicates Inputs="@(Compile -> '$(OutDir)%(RelativeDir)')">
+      <Output TaskParameter="Filtered" ItemName="SourceDirectories" />
+    </RemoveDuplicates>
+    <ItemGroup>
+      <FileWrites Include="@(Compile -> '$(OutDir)%(RelativeDir)%(Filename)%(Extension)')" />
+      <FileWrites Include="@(Compile -> '$(OutDir)%(RelativeDir)%(Filename)%(Extension).dll')" />
+      <FileWrites Include="@(Compile -> '$(OutDir)%(RelativeDir)%(Filename)%(Extension).pdb')" />
+      <FileWrites Include="@(SourceDirectories)" />
+    </ItemGroup>
+  </Target>
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  <Target Name="CopyFilesToOutputDirectory" DependsOnTargets="&#xD;&#xA;            ComputeIntermediateSatelliteAssemblies;&#xD;&#xA;            _CopyFilesMarkedCopyLocal;&#xD;&#xA;            _CopySourceItemsToOutputDirectory;&#xD;&#xA;            _CopyAppConfigFile;&#xD;&#xA;            _CopyManifestFiles;&#xD;&#xA;            _CheckForCompileOutputs;&#xD;&#xA;            _SGenCheckForOutputs">
+    <Copy SourceFiles="@(AddModules)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="$(SkipCopyUnchangedFiles)" OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)" Retries="$(CopyRetryCount)" RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)" UseHardlinksIfPossible="$(CreateHardLinksForCopyAdditionalFilesIfPossible)" Condition="'@(AddModules)' != ''">
+      <Output TaskParameter="DestinationFiles" ItemName="FileWrites" />
+    </Copy>
+  </Target>
+</Project>
